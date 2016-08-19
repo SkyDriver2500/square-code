@@ -1,6 +1,7 @@
 #include <fstream>
 #include <cstring>
 #include <cstdlib>
+#include <iostream>
 
 #include "bitmap.hpp"
 
@@ -35,9 +36,9 @@ struct BITMAPRGBDATA {
 	unsigned char r;
 }__attribute__((packed));
 
-bool Bitmap::createbmp(char* path) {
-	int width = 512;
-	int height = 512;
+bool Bitmap::createbmp(char* path, char* buffer) {
+	int width = 128;
+	int height = 128;
 	unsigned int size = width * height * 3;
 	BITMAPFILEHEADER bmfh;
 	BITMAPINFOHEADER bmih;
@@ -63,22 +64,26 @@ bool Bitmap::createbmp(char* path) {
 	
 	bitmap = fopen(path, "wb");
 	
-	BITMAPRGBDATA buffer[width][height];
+	BITMAPRGBDATA rgbbuffer[width][height];
 	
 	fwrite(&bmfh, 1, sizeof(BITMAPFILEHEADER), bitmap);
 	fwrite(&bmih, 1, sizeof(BITMAPINFOHEADER), bitmap);
 	
-	memset(buffer, 0, sizeof(buffer));
+	memset(rgbbuffer, 0, sizeof(rgbbuffer));
 	
+	int cursor = 0;
 	for(int i=0; i<width; i++) {
 		for(int j=0; j<height; j++) {
-			buffer[i][j].r = 0xf0;
-			buffer[i][j].g = 0x0d;
-			buffer[i][j].b = 0x42;
+			unsigned int c = buffer[cursor];
+			rgbbuffer[i][j].r = c;
+			rgbbuffer[i][j].g = c;
+			rgbbuffer[i][j].b = c;
+			
+			cursor++;
 		}
 	}
 	
-	fwrite(&buffer, 1, size, bitmap);
+	fwrite(&rgbbuffer, 1, size, bitmap);
 	fclose(bitmap);
 	return true;
 }

@@ -2,9 +2,12 @@
 #define __SOURCEPARSER_H_INCLUDED__
 class SourceFile {
 public:
-	SourceFile(char *file);
+	SourceFile(char *sourcefilename);
+	bool readfile();
+	char* getcontent();
 private:
-	char *file;
+	char *sourcefilename;
+	char *buffer;
 };
 
 #endif

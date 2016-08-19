@@ -14,15 +14,23 @@ void printUsage(char **args) {
 
 int main(int argc, char **argv) {
 	Bitmap bitmap;
+	SourceFile sfile(argv[1]);
 	char* path;
 	path = (char*) malloc (1024);
 	
 	strcpy(path, getenv("HOME"));
 	strcat(path, "/Pictures/");
-	strcat(path, argv[1]);
+	strcat(path, argv[2]);
 	
-	if(bitmap.createbmp(path)) {
-		cout << "[ + ] Bitmap created. Saving under " 
+	if(sfile.readfile()) {
+		cout << "[ + ] File read successfully." << endl;
+	} else {
+		cout << "[ - ] Couldn't read file." << endl;
+		exit(2);
+	}
+	
+	if(bitmap.createbmp(path, sfile.getcontent())) {
+		cout << "[ + ] Bitmap created. Saving under "
 			<< path << endl;
 	} else {
 		cout << "[ - ] Failed to create bitmap." << endl;

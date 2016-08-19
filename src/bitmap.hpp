@@ -3,7 +3,7 @@
 
 class Bitmap {
 public:
-	bool createbmp(char *filename);
+	bool createbmp(char *filename, char* buffer);
 };
 
 #endif
