@@ -30,7 +30,7 @@ struct BITMAPINFOHEADER {
 }__attribute__((packed));
 
 struct BITMAPRGBDATA {
-	// Inverted RGB
+	/* Inverted RGB because bitmaps are stored upside down. */
 	unsigned char b;
 	unsigned char g;
 	unsigned char r;
@@ -43,13 +43,13 @@ bool Bitmap::createbmp(char* path, char* buffer) {
 	BITMAPFILEHEADER bmfh;
 	BITMAPINFOHEADER bmih;
 	FILE* bitmap;
-	
+
 	bmfh.bfType = 0x4D42;
 	bmfh.bfSize = size + sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
 	bmfh.bfReserved1 = 0x00;
 	bmfh.bfReserved2 = 0x00;
 	bmfh.bfOffBits = bmfh.bfSize - size;
-	
+
 	bmih.biSize = 0x28; // 40 bytes
 	bmih.biWidth = width;
 	bmih.biHeight = height;
@@ -61,16 +61,16 @@ bool Bitmap::createbmp(char* path, char* buffer) {
 	bmih.biYPelsPerMeter = 0x00;
 	bmih.biClrUsed = 0x00;
 	bmih.biClrImportant = 0x00;
-	
+
 	bitmap = fopen(path, "wb");
-	
+
 	BITMAPRGBDATA rgbbuffer[width][height];
-	
+
 	fwrite(&bmfh, 1, sizeof(BITMAPFILEHEADER), bitmap);
 	fwrite(&bmih, 1, sizeof(BITMAPINFOHEADER), bitmap);
-	
+
 	memset(rgbbuffer, 0, sizeof(rgbbuffer));
-	
+
 	int cursor = 0;
 	for(int i=0; i<width; i++) {
 		for(int j=0; j<height; j++) {
@@ -78,11 +78,11 @@ bool Bitmap::createbmp(char* path, char* buffer) {
 			rgbbuffer[i][j].r = c;
 			rgbbuffer[i][j].g = c;
 			rgbbuffer[i][j].b = c;
-			
+
 			cursor++;
 		}
 	}
-	
+
 	fwrite(&rgbbuffer, 1, size, bitmap);
 	fclose(bitmap);
 	return true;
