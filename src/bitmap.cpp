@@ -30,22 +30,35 @@ struct BITMAPINFOHEADER {
 	unsigned int biClrImportant;	// 4 bytes
 }__attribute__((packed));
 
-struct BITMAPRGBDATA {
-	/* Inverted RGB because bitmaps are stored upside down. */
-	unsigned char b;
-	unsigned char g;
+struct BITMAPDATA {
+	unsigned char gray;
+}__attribute__((packed));
+
+struct PALETTE {
 	unsigned char r;
+	unsigned char g;
+	unsigned char b;
+	unsigned char reserved;
 }__attribute__((packed));
 
 bool Bitmap::createbmp(char* path, char* buffer) {
 	int dimension = ceil(sqrt(strlen(buffer)));
-	unsigned int size = pow(dimension, 2) * 3;
+	unsigned int size = pow(dimension, 2);
 	BITMAPFILEHEADER bmfh;
 	BITMAPINFOHEADER bmih;
+	PALETTE palette[256];	// In this case a grayscale palette.
 	FILE* bitmap;
 
+	/* Fill the palette with grayscale */
+	for(int i=0; i<256; i++) {
+		palette[i].r = i;
+		palette[i].g = i;
+		palette[i].b = i;
+		palette[i].reserved = 0x00;
+	}
+
 	bmfh.bfType = 0x4D42;
-	bmfh.bfSize = size + sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+	bmfh.bfSize = size + sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + sizeof(palette);
 	bmfh.bfReserved1 = 0x00;
 	bmfh.bfReserved2 = 0x00;
 	bmfh.bfOffBits = bmfh.bfSize - size;
@@ -54,36 +67,36 @@ bool Bitmap::createbmp(char* path, char* buffer) {
 	bmih.biWidth = dimension;
 	bmih.biHeight = dimension;
 	bmih.biPlanes = 0x01;
-	bmih.biBitCount = 0x18;
+	bmih.biBitCount = 0x08;
 	bmih.biCompression = 0x00;
 	bmih.biSizeImage = 0x00;
 	bmih.biXPelsPerMeter = 0x00;
 	bmih.biYPelsPerMeter = 0x00;
-	bmih.biClrUsed = 0x00;
+	bmih.biClrUsed = 256;
 	bmih.biClrImportant = 0x00;
 
 	bitmap = fopen(path, "wb");
 
-	BITMAPRGBDATA rgbbuffer[dimension][dimension];
+	BITMAPDATA graybuffer[dimension][dimension];
 
 	fwrite(&bmfh, 1, sizeof(BITMAPFILEHEADER), bitmap);
 	fwrite(&bmih, 1, sizeof(BITMAPINFOHEADER), bitmap);
-
-	memset(rgbbuffer, 0, sizeof(rgbbuffer));
+	for(int i=0; i<256; i++) {
+		fwrite(&palette[i], 1, sizeof(PALETTE), bitmap);
+	}
+	memset(graybuffer, 0, sizeof(graybuffer));
 
 	int cursor = 0;
 	for(int i=0; i<dimension; i++) {
 		for(int j=0; j<dimension; j++) {
 			unsigned int c = buffer[cursor];
-			rgbbuffer[i][j].r = c;
-			rgbbuffer[i][j].g = c;
-			rgbbuffer[i][j].b = c;
+			graybuffer[i][j].gray = c;
 
 			cursor++;
 		}
 	}
 
-	fwrite(&rgbbuffer, 1, size, bitmap);
+	fwrite(&graybuffer, 1, size, bitmap);
 	fclose(bitmap);
 	return true;
 }

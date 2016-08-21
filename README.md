@@ -34,16 +34,17 @@ Usage:
 **Note:** Files are saved under the users home directory.
 
 # About bitmaps
-For this project these tables are a useful reference if you are planning on editing the bitmap generation.
+For this project these tables are a useful reference if you are planning on editing the bitmap generation. Even if you are here just to try and learn more about bitmaps and understand what's behind them this section might be helpful to you.
 
 ## File Header
+
 | Position | Name | Size | Standard Value | Description |
 | ---:| --- | --- |:---:| --- |
 | 1 | bfType | 2 Bytes | 0x4D42 | Most of the time is set to 'BM' (0x4D42 in hex) to declare it is a .bmp bitmap file. |
 | 3 | bfSize | 4 Bytes | ---- | Size of the file in Bytes |
 | 7 | bfReserved1 | 2 Bytes | 0 | Reserved. |
 | 9 | bfReserved2 | 2 Bytes | 0 | Reserved. |
-| 11 | bfOffBits | 4 Bytes | ---- | Offset from the beginnning of the file to the bitmap data. bfSize minus the size of the data.  |
+| 11 | bfOffBits | 4 Bytes | ---- | Offset from the beginnning of the file to the bitmap data. bfSize minus the size of the data. (**Palettes are considered headers, not bitmap data**).  |
 
 ## Information Header
 
@@ -62,13 +63,46 @@ For this project these tables are a useful reference if you are planning on edit
 | 51 | biClrImportant | 4 Bytes | 0 | Number of colors that are "important" for the bitmap. Set to 0 for all colors to be "important". |
 
 ## RGB Data
-For bitmaps with 8 Bits per pixel.
+For bitmaps with more than 8 Bits per pixel (16, 24...). Don't need a color palette as each byte will be assigned to red, green and blue.
 
 | Position | Name | Size | Range | Description |
 | ---:| --- | --- |:---:| --- |
-| 1 | b | 1 Byte | 0x00 - 0xff | Blue |
-| 2 | g | 1 Byte | 0x00 - 0xff | Green |
-| 3 | r | 1 Byte | 0x00 - 0xff | Red |
+| Offset + 1 | b | 1 Byte | 0x00 - 0xff | Blue |
+| Offset + 2 | g | 1 Byte | 0x00 - 0xff | Green |
+| Offset + 3 | r | 1 Byte | 0x00 - 0xff | Red |
+
+## 8 Bit Bitmaps
+1 Bit, 4 Bit and 8 Bit bitmaps need to have a palette of colors between the *Information Header* and the *Data*. These palettes are the combinations of red, green and blue that will form the color you want in that *index*.
+
+**Note:** For 8 Bit there are 256 indexes (0-255), for 4 Bit there are 16 indexes (0-15) and for 1 Bit there are 2 indexes (0-1).
+
+Imagine I want a 8 Bit grayscale bitmap. I would use the following structures:
+
+### Palette
+
+| Position | Name | Size | Range | Description |
+| ---:| --- | --- |:---:| --- |
+| 55 | r | 1 Byte | 0x00 - 0xff | Red |
+| 56 | g | 1 Byte | 0x00 - 0xff | Green |
+| 56 | b | 1 Byte | 0x00 - 0xff | Blue |
+| 57 | reserved | 1 Byte | 0x00 | Reserved |
+
+**Note:** In a palette, r, g and b are stored in the correct order unlike the RGB Data (RGB Data is used to draw the bitmap, and a bitmap is drawn inverted in position)
+
+Then I would loop through each index and assign it the same value to r, g and b and increment that value by 1. At the end I would have 256 shades of gray stored in the palette.
+
+### Bitmap Data
+Like RGB Data this contains what will be drawn to the bitmap. "Unlike" RGB Data this will contain the *index* pointing to a color in the palette.
+
+| Position | Name | Size | Index | Description |
+| ---:| --- | --- |:---:| --- |
+| Offset + 1 | gray | 1 Byte | 0x00 - 0xff | Gray Scale |
+
+You will get a much smaller grayscale file than you would by using RGB Data and just assingning the same value to r, g and b because you would be writing 3 bytes for each pixel instead of 1.
+
+# Notes
+
+Bitmaps are yet to be confirmed that they really translate the document converted.
 
 # License
 Check LICENSE file for more information.
