@@ -2,6 +2,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <iostream>
+#include <math.h>
 
 #include "bitmap.hpp"
 
@@ -37,9 +38,8 @@ struct BITMAPRGBDATA {
 }__attribute__((packed));
 
 bool Bitmap::createbmp(char* path, char* buffer) {
-	int width = 128;
-	int height = 128;
-	unsigned int size = width * height * 3;
+	int dimension = ceil(sqrt(strlen(buffer)));
+	unsigned int size = pow(dimension, 2) * 3;
 	BITMAPFILEHEADER bmfh;
 	BITMAPINFOHEADER bmih;
 	FILE* bitmap;
@@ -51,8 +51,8 @@ bool Bitmap::createbmp(char* path, char* buffer) {
 	bmfh.bfOffBits = bmfh.bfSize - size;
 
 	bmih.biSize = 0x28; // 40 bytes
-	bmih.biWidth = width;
-	bmih.biHeight = height;
+	bmih.biWidth = dimension;
+	bmih.biHeight = dimension;
 	bmih.biPlanes = 0x01;
 	bmih.biBitCount = 0x18;
 	bmih.biCompression = 0x00;
@@ -64,7 +64,7 @@ bool Bitmap::createbmp(char* path, char* buffer) {
 
 	bitmap = fopen(path, "wb");
 
-	BITMAPRGBDATA rgbbuffer[width][height];
+	BITMAPRGBDATA rgbbuffer[dimension][dimension];
 
 	fwrite(&bmfh, 1, sizeof(BITMAPFILEHEADER), bitmap);
 	fwrite(&bmih, 1, sizeof(BITMAPINFOHEADER), bitmap);
@@ -72,8 +72,8 @@ bool Bitmap::createbmp(char* path, char* buffer) {
 	memset(rgbbuffer, 0, sizeof(rgbbuffer));
 
 	int cursor = 0;
-	for(int i=0; i<width; i++) {
-		for(int j=0; j<height; j++) {
+	for(int i=0; i<dimension; i++) {
+		for(int j=0; j<dimension; j++) {
 			unsigned int c = buffer[cursor];
 			rgbbuffer[i][j].r = c;
 			rgbbuffer[i][j].g = c;
