@@ -80,12 +80,14 @@ Imagine I want a 8 Bit grayscale bitmap. I would use the following structures:
 
 ### Palette
 
-| Position | Name | Size | Range | Description |
-| ---:| --- | --- |:---:| --- |
-| 55 | r | 1 Byte | 0x00 - 0xff | Red |
-| 56 | g | 1 Byte | 0x00 - 0xff | Green |
-| 56 | b | 1 Byte | 0x00 - 0xff | Blue |
-| 57 | reserved | 1 Byte | 0x00 | Reserved |
+Palletes are stored between Information Header and the Bitmap data.
+
+| Name | Size | Range | Description |
+| --- | --- |:---:| --- |
+| r | 1 Byte | 0x00 - 0xff | Red |
+| g | 1 Byte | 0x00 - 0xff | Green |
+| b | 1 Byte | 0x00 - 0xff | Blue |
+| reserved | 1 Byte | 0x00 | Reserved |
 
 **Note:** In a palette, r, g and b are stored in the correct order unlike the RGB Data (RGB Data is used to draw the bitmap, and a bitmap is drawn inverted in position)
 
