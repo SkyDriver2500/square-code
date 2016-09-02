@@ -1,5 +1,5 @@
 # SCode
-Under development text to bitmap converter. SCode convert text files to bitmap squares and with lossless image compression techniques hope to turn text files into much smaller image file. Compressing the text file gradually into the smallest file without loss of data.
+SCode convert text files to bitmap squares and with lossless image compression techniques hope to turn text files into much smaller image file. Compressing the text file gradually into the smallest file without loss of data.
 
 ## Examples
 A text about programming taken from *Wikipedia*:
