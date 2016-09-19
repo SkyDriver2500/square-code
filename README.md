@@ -102,9 +102,5 @@ Like RGB Data this contains what will be drawn to the bitmap. "Unlike" RGB Data 
 
 You will get a much smaller grayscale file than you would by using RGB Data and just assingning the same value to r, g and b because you would be writing 3 bytes for each pixel instead of 1.
 
-# Notes
-
-Bitmaps are yet to be confirmed that they really translate the document converted.
-
 # License
 Check LICENSE file for more information.
