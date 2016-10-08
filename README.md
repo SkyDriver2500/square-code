@@ -7,7 +7,7 @@ A text about programming taken from [*Wikipedia*](https://en.wikipedia.org/wiki/
 ![Programming.bmp](examples/programming.bmp)
 
 ## Download
-You can download the released (or pre-released) version of this software [here](https://github.com/SkyDriver2500/square-code/releases/download/v0.1/scode-0.1.tar.gz).
+You can download the released (or pre-released) version of this software [here](https://github.com/SkyDriver2500/square-code/releases/download/v0.1.3/scode-0.1.3.tar.gz).
 
 ## Preparing the development version
 This project uses autotools to generate the building files.
